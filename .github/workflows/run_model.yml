@@ -1,0 +1,40 @@
+name: Analisis Bayesian Kepadatan Orang Utan
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: 
+
+jobs:
+  run-model:
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: Tarik Repositori
+        uses: actions/checkout@v4
+
+      - name: Setup environment R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+
+      - name: Install software JAGS 
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jags
+
+      - name: Install library R 
+        run: |
+          install.packages(c("readxl", "dplyr", "coda", "ggplot2", "rjags"))
+        shell: Rscript {0}
+
+      - name: Eksekusi Skrip 
+        run: Rscript script_github.R
+
+      - name: Ekspor Hasil Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hasil_Analisis_Sekung
+          path: |
+            *.png
+            *.txt
